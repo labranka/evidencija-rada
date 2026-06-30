@@ -439,8 +439,11 @@
       font-size: 11px;
     }
     .sheet{
-      box-shadow:none !important; border:none !important;
-      border-radius:0 !important; max-width:none !important;
+      box-shadow:none !important; max-width:none !important;
+      border: 1.5px solid #2b313b !important;   /* outer frame: every lane aligns inside it */
+      border-radius:0 !important;
+      padding: 12px !important;                  /* uniform inset → header, table, footer all line up */
+      overflow:hidden;
     }
     /* hide all screen-only chrome */
     .summary, .actions, .footnote, .toast, .save-flag,
@@ -550,9 +553,9 @@
     table.log thead th.col-time, table.log thead th.col-hours{ text-align:center; }
     table.log td.col-time, table.log td.col-hours{ text-align:center; }
 
-    /* signature prints as a blank line */
+    /* signature: clean empty cell (no underline) — drawn ink still prints */
     .sign-box{
-      border:none !important; border-bottom: 1px solid #000 !important;
+      border:none !important;
       border-radius:0; height: 26px; background:transparent !important;
     }
     .sign-box canvas{ filter: contrast(1.3); }
