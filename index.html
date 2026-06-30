@@ -661,7 +661,7 @@
       <li><span class="step">4</span><span><b>Potpis:</b> radnik se potpiše u polju — prstom na telefonu/tabletu ili mišem. <span class="en">/ The worker signs in the box.</span></span></li>
       <li><span class="step">5</span><span><b>Radovi:</b> dole u polju opiši izvršene radove. <span class="en">/ Describe the work done below.</span></span></li>
       <li><span class="step">＋</span><span><b>Dodaj/ukloni radnika:</b> dugme <b>„Dodaj radnika"</b> dodaje novi red; <b>×</b> pored rednog broja uklanja red. <span class="en">/ Add a worker, or remove a row with ×.</span></span></li>
-      <li><span class="step">6</span><span><b>Sačuvaj / Štampaj:</b> klikni <b>Sačuvaj</b> da sačuvaš na uređaju, pa <b>Štampaj / PDF</b> → „Sačuvaj kao PDF" za čist A4. <span class="en">/ Save, then Print → Save as PDF (A4).</span></span></li>
+      <li><span class="step">6</span><span><b>Sačuvaj / Štampaj:</b> <b>Sačuvaj</b> preuzme backup fajl na uređaj (vraćaš ga preko <b>Učitaj</b>); za gotov dokument klikni <b>Štampaj / PDF</b> → „Sačuvaj kao PDF" (A4). <span class="en">/ Save downloads a backup; Print → Save as PDF for the final A4.</span></span></li>
     </ol>
   </details>
 
@@ -790,7 +790,7 @@
     <span class="toast" id="toast" role="status" aria-live="polite"></span>
   </section>
 
-  <p class="footnote">ES ENERGOSERVIS · Evidencija rada / Daily Work Log · Podaci se čuvaju lokalno na ovom uređaju (localStorage). / Data is stored locally on this device.</p>
+  <p class="footnote">ES ENERGOSERVIS · Evidencija rada / Daily Work Log · „Sačuvaj" preuzme backup fajl i pamti unos na ovom uređaju; „Učitaj" vraća taj fajl. „Štampaj / PDF" daje gotov A4 dokument. / „Save" downloads a backup &amp; remembers on this device; „Print / PDF" gives the final A4.</p>
 
 </div>
 
@@ -1192,14 +1192,28 @@
     });
     return { date: dateEl.value, supervisor: supEl.value, work: workEl.value, rows: rows };
   }
-  function saveState(){
+  /** Trigger a file download on the device. */
+  function downloadText(filename, text, mime){
     try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState()));
-      toast("Sačuvano / Saved ✓");
-      flashSaveFlag();
-    }catch(e){
-      toast("Greška pri čuvanju / Save error", true);
-    }
+      var blob = new Blob([text], { type: mime || "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 150);
+      return true;
+    }catch(e){ return false; }
+  }
+  function saveState(){
+    var state = collectState();
+    /* keep a copy in the browser so reopening auto-restores on this device */
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+    /* download a real file to the device */
+    var d = state.date || todayISO();
+    var ok = downloadText("evidencija-" + d + ".json", JSON.stringify(state, null, 2));
+    toast(ok ? "Sačuvano — fajl preuzet na uređaj ✓" : "Sačuvano u pregledaču ✓");
+    flashSaveFlag();
   }
   function fillRow(tr, rd){
     if(typeof rd.name === "string") tr.querySelector('[data-field="name"]').value = rd.name;
@@ -1260,6 +1274,27 @@
       return false;
     }
   }
+  /** Open a previously saved .json file from the device and restore it. */
+  function loadFromFile(){
+    var input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json,application/json";
+    input.addEventListener("change", function(){
+      var f = input.files && input.files[0];
+      if(!f) return;
+      var reader = new FileReader();
+      reader.onload = function(){
+        try{
+          var data = JSON.parse(reader.result);
+          applyState(data);
+          try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+          toast("Učitano iz fajla ✓");
+        }catch(e){ toast("Neispravan fajl / Invalid file", true); }
+      };
+      reader.readAsText(f);
+    });
+    input.click();
+  }
   function resetForm(){
     if(!confirm("Resetovati formular? Svi uneseni podaci biće obrisani.\n\nReset the form? All entered data will be cleared.")) return;
     dateEl.value = todayISO();
@@ -1274,7 +1309,7 @@
   function wireGlobal(){
     document.getElementById("btn-print").addEventListener("click", doPrint);
     document.getElementById("btn-save").addEventListener("click", saveState);
-    document.getElementById("btn-load").addEventListener("click", function(){ loadState(true); });
+    document.getElementById("btn-load").addEventListener("click", loadFromFile);
     document.getElementById("btn-reset").addEventListener("click", resetForm);
     var addBtn = document.getElementById("btn-add");
     if(addBtn) addBtn.addEventListener("click", function(){ addRow("", true); });
