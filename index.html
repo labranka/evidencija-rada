@@ -855,6 +855,19 @@
     var el = document.getElementById(id);
     if(el) el.textContent = val;
   }
+  /* In-app browsers (WhatsApp/Viber/Instagram/FB/Android WebView) often can't print. */
+  function isInAppBrowser(){
+    var ua = navigator.userAgent || "";
+    return /FBAN|FBAV|FB_IAB|Instagram|Line\/|Viber|WhatsApp|MicroMessenger|GSA\/|; wv\)/i.test(ua);
+  }
+  function doPrint(){
+    if(isInAppBrowser()){
+      alert('Za štampu otvori stranicu u pravom pregledaču.\n\nMeni (⋮ ili ⋯) u uglu → „Otvori u pregledaču / Open in browser“ (Chrome, Safari ili Samsung Internet), pa opet „Štampaj / PDF“.');
+      return;
+    }
+    try{ window.print(); }
+    catch(e){ toast('Štampa nije dostupna ovde — otvori u pregledaču', true); }
+  }
   var toastTimer = null;
   function toast(msg, isWarn){
     toastEl.textContent = msg;
@@ -1259,7 +1272,7 @@
 
   /* -------------------- wiring & init -------------------- */
   function wireGlobal(){
-    document.getElementById("btn-print").addEventListener("click", function(){ window.print(); });
+    document.getElementById("btn-print").addEventListener("click", doPrint);
     document.getElementById("btn-save").addEventListener("click", saveState);
     document.getElementById("btn-load").addEventListener("click", function(){ loadState(true); });
     document.getElementById("btn-reset").addEventListener("click", resetForm);
