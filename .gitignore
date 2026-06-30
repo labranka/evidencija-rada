@@ -6,3 +6,8 @@ evidencija-rada.html
 evidencija_rada.html
 .DS_Store
 *.log
+
+# build bundles / not for hosting
+za-sestru/
+evidencija-site/
+*.zip

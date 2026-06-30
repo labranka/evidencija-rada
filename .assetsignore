@@ -1,0 +1,9 @@
+.git
+.gitignore
+.assetsignore
+wrangler.toml
+README.md
+evidencija-rucni-template.html
+za-sestru
+evidencija-site
+*.zip

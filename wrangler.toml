@@ -1,0 +1,6 @@
+name = "evidencija-rada"
+compatibility_date = "2024-11-01"
+
+# Static site (no server code) — just serve the files in the repo.
+[assets]
+directory = "./"
