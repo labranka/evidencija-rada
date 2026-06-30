@@ -1,0 +1,8 @@
+# local-only / source files — not part of the published site
+KONACNA EVIDENCIJA.pdf
+konacna-evidencija.html
+template.html
+evidencija-rada.html
+evidencija_rada.html
+.DS_Store
+*.log

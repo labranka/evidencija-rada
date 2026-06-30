@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EVIDENCIJA RADA / DAILY WORK LOG — ES ENERGOSERVIS</title>
+<style>
+  /* ============================================================
+     ES ENERGOSERVIS — Daily Work Log
+     Design direction: "Dashboard Utility" (final production build)
+     Single self-contained file. Works offline by double-clicking.
+     No external libraries, fonts or network calls.
+     ============================================================ */
+
+  :root{
+    --es-red: #E2001A;          /* brand red */
+    --es-red-dark: #B10014;
+    --es-red-soft: #fde7e9;
+    --ink: #232830;             /* dark grey "ES ENERGO" tone */
+    --ink-soft: #4a525e;
+    --line: #d3d8e0;
+    --line-strong: #aeb6c2;
+    --bg: #eef1f5;
+    --panel: #ffffff;
+    --zebra: #f6f8fb;
+    --head-bg: #2b313b;
+    --head-bg2: #353d49;
+    --ok: #1f9d55;
+    --shadow: 0 10px 30px rgba(28,34,45,.12), 0 2px 6px rgba(28,34,45,.08);
+    --radius: 14px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{ margin:0; padding:0; }
+
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 500px at 100% -10%, #ffe9ec 0%, rgba(255,233,236,0) 55%),
+      radial-gradient(900px 450px at -10% 0%, #e4ecff 0%, rgba(228,236,255,0) 50%),
+      var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+    padding: 22px 14px 60px;
+  }
+
+  .sheet{
+    max-width: 1180px;
+    margin: 0 auto;
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: clip;
+    border: 1px solid #e3e7ee;
+  }
+
+  /* ---------------- HEADER ---------------- */
+  .header{
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: center;
+    padding: 22px 26px;
+    background:
+      linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    border-bottom: 3px solid var(--es-red);
+    position: relative;
+  }
+  .header::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-3px; height:3px;
+    background: linear-gradient(90deg, var(--es-red) 0%, var(--es-red) 38%, var(--ink) 38%, var(--ink) 100%);
+  }
+  .brand-logo{
+    height: 64px; width:auto; display:block;
+    object-fit: contain;
+  }
+  /* Fallback wordmark if logo.png missing */
+  .brand-fallback{
+    display:none;
+    font-weight: 800; font-size: 30px; letter-spacing:.5px;
+    align-items:center; gap:2px;
+  }
+  .brand-fallback .es-grey{ color: var(--ink); }
+  .brand-fallback .es-red{ color: var(--es-red); }
+
+  .titles h1{
+    margin:0; font-size: clamp(19px, 2.4vw, 27px);
+    letter-spacing:.4px; color: var(--ink); font-weight: 800;
+  }
+  .titles h1 .slash{ color: var(--es-red); font-weight:800; }
+  .titles .subtitle{
+    margin: 4px 0 0; font-size: 13.5px; color: var(--ink-soft); font-weight: 600;
+  }
+
+  /* ---------------- META FIELDS ---------------- */
+  .meta{
+    display:flex; flex-wrap:wrap; gap: 14px 26px;
+    padding: 16px 26px;
+    background: var(--zebra);
+    border-bottom: 1px solid var(--line);
+  }
+  .field{
+    display:flex; flex-direction:column; gap:5px;
+    min-width: 220px; flex: 1 1 240px;
+  }
+  .field label{
+    font-size: 11.5px; font-weight: 800; letter-spacing:.5px;
+    color: var(--ink-soft); text-transform: uppercase;
+  }
+  .field input{
+    font: inherit; font-size: 15px; font-weight:600;
+    padding: 9px 12px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 9px;
+    background:#fff; color: var(--ink);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field input:focus{
+    outline:none; border-color: var(--es-red);
+    box-shadow: 0 0 0 3px rgba(226,0,26,.14);
+  }
+
+  /* ---------------- SUMMARY STRIP (screen only) ---------------- */
+  .summary{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    padding: 16px 26px;
+    background: linear-gradient(180deg,#fff, #fafbfd);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat{
+    position:relative;
+    background:#fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 11px 14px;
+    overflow:hidden;
+  }
+  .stat::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+    background: var(--es-red);
+  }
+  .stat .k{
+    font-size: 10.5px; font-weight:800; letter-spacing:.6px;
+    text-transform: uppercase; color: var(--ink-soft);
+    display:flex; align-items:center; gap:6px;
+  }
+  .stat .v{
+    font-size: 25px; font-weight: 800; color: var(--ink);
+    margin-top: 2px; font-variant-numeric: tabular-nums;
+  }
+  .stat .v small{ font-size: 13px; font-weight:700; color: var(--ink-soft); }
+  .stat.is-site::before{ background: var(--ink); }
+  .stat .dot{
+    width:9px; height:9px; border-radius:50%; display:inline-block;
+    background: var(--es-red);
+  }
+
+  /* ---------------- TABLE ---------------- */
+  .table-wrap{
+    width:100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 0 0;
+  }
+  table.log{
+    width:100%;
+    min-width: 880px;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.log thead th{
+    position: sticky; top:0; z-index: 5;
+    background: linear-gradient(180deg, var(--head-bg2), var(--head-bg));
+    color:#fff;
+    font-size: 11px; font-weight: 700; letter-spacing:.3px;
+    text-align:left;
+    padding: 10px 10px;
+    border-right: 1px solid rgba(255,255,255,.08);
+    vertical-align: middle;
+    line-height: 1.25;
+  }
+  table.log thead th .en{
+    display:block; font-weight:600; font-size:9.5px; opacity:.72;
+    text-transform: uppercase; letter-spacing:.4px; margin-top:2px;
+  }
+  table.log tbody td{
+    padding: 6px 9px;
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid #eef0f4;
+    vertical-align: middle;
+  }
+  table.log tbody tr:nth-child(even){ background: var(--zebra); }
+  table.log tbody tr:hover{ background:#eef4ff; }
+
+  .col-no{ width: 42px; text-align:center; }
+  .col-no .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:7px;
+    background: var(--ink); color:#fff; font-weight:800; font-size:12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .col-name{ min-width: 190px; }
+  .col-site{ width: 172px; }
+  .col-time{ width: 96px; }
+  .col-hours{ width: 78px; }
+  .col-sign{ min-width: 150px; width: 170px; }
+
+  /* name + time + hours inputs */
+  .cell-input{
+    width:100%; font: inherit; font-size: 13.5px; font-weight:600;
+    padding: 7px 8px;
+    border: 1.5px solid transparent;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+  tr:nth-child(even) .cell-input{ background:#fff; }
+  .cell-input:hover{ border-color: var(--line-strong); }
+  .cell-input:focus{
+    outline:none; border-color: var(--es-red);
+    box-shadow: 0 0 0 3px rgba(226,0,26,.13);
+    background:#fff;
+  }
+  .name-input{ font-weight:700; }
+  .time-input{ text-align:center; font-variant-numeric: tabular-nums; }
+  .hours-input{
+    text-align:center; font-weight:800;
+    background: var(--es-red-soft);
+    color: var(--es-red-dark);
+    font-variant-numeric: tabular-nums;
+  }
+  .hours-input:focus{ background:#fff; }
+
+  /* ---- site chips (single-select per row) — stacked vertically ---- */
+  .sites{ display:flex; flex-direction:column; gap:6px; align-items:stretch; }
+  .chip{
+    appearance:none; -webkit-appearance:none;
+    border: 1.5px solid var(--line-strong);
+    background:#fff;
+    color: var(--ink-soft);
+    font: inherit; font-size: 12.5px; font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 9px;
+    cursor: pointer;
+    user-select:none;
+    display:flex; align-items:center; justify-content:flex-start; gap:8px;
+    transition: all .14s ease;
+    white-space: nowrap; text-align:left;
+  }
+  .chip .tick{
+    width:14px; height:14px; border-radius:50%;
+    border:1.5px solid var(--line-strong);
+    display:inline-flex; align-items:center; justify-content:center;
+    flex:0 0 auto; box-sizing:border-box;
+    transition: all .14s ease;
+  }
+  .chip .tick::after{
+    content:""; display:block; width:6px; height:6px; border-radius:50%;
+    background: transparent; transition: background .14s;
+  }
+  .chip:hover{ border-color: var(--es-red); color: var(--es-red-dark); }
+  .chip[aria-pressed="true"]{
+    background: var(--es-red);
+    border-color: var(--es-red);
+    color:#fff;
+    box-shadow: 0 2px 8px rgba(226,0,26,.30);
+  }
+  .chip[aria-pressed="true"] .tick{
+    border-color:#fff; background:#fff;
+  }
+  .chip[aria-pressed="true"] .tick::after{ background: var(--es-red); }
+
+  /* Print-only fallback checkboxes (☐ Vršac ...) — hidden on screen */
+  .sites-print{ display:none; }
+
+  /* ---- signature box / canvas ---- */
+  .sign-box{
+    position:relative;
+    height: 40px;
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 8px;
+    background:#fff;
+    overflow:hidden;
+    cursor: crosshair;
+  }
+  .sign-box canvas{ display:block; width:100%; height:100%; touch-action:none; }
+  .sign-box .hint{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10.5px; color:#9aa3b0; font-weight:700; pointer-events:none;
+    letter-spacing:.3px;
+  }
+  .sign-box.has-ink .hint{ display:none; }
+  .sign-clear{
+    position:absolute; top:2px; right:3px;
+    border:none; background:rgba(255,255,255,.85);
+    color:var(--es-red); font-size:14px; line-height:1;
+    width:18px; height:18px; border-radius:5px; cursor:pointer;
+    display:none; align-items:center; justify-content:center; font-weight:900;
+  }
+  .sign-box.has-ink .sign-clear{ display:flex; }
+
+  /* ---------------- WORK DONE ---------------- */
+  .workdone{
+    position: relative;
+    padding: 22px 26px 6px;
+    overflow: hidden;
+  }
+  /* Faint ES ENERGOSERVIS gear watermark behind the work-done box */
+  .gear-watermark{
+    position:absolute;
+    right: 22px; bottom: -6px;
+    width: 150px; height: 150px;
+    opacity: .06;
+    pointer-events:none;
+    z-index: 0;
+    color: var(--es-red);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .gear-watermark svg{ width:100%; height:100%; display:block; }
+  .workdone h2, .workdone textarea{ position: relative; z-index: 1; }
+  .workdone h2{
+    margin:0 0 10px; font-size: 14px; font-weight:800;
+    letter-spacing:.4px; color: var(--ink);
+    display:flex; align-items:center; gap:10px;
+  }
+  .workdone h2::before{
+    content:""; width:5px; height:18px; border-radius:3px; background:var(--es-red);
+  }
+  .workdone textarea{
+    width:100%; min-height: 130px; resize: vertical;
+    font: inherit; font-size: 14px; line-height:1.5;
+    padding: 13px 14px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 11px; background:rgba(255,255,255,.72); color:var(--ink);
+  }
+  .workdone textarea:focus{
+    outline:none; border-color: var(--es-red);
+    box-shadow: 0 0 0 3px rgba(226,0,26,.13); background:#fff;
+  }
+
+  /* ---------------- ACTION BAR ---------------- */
+  .actions{
+    display:flex; flex-wrap:wrap; gap:10px;
+    padding: 18px 26px 26px;
+    align-items:center;
+  }
+  .btn{
+    font: inherit; font-size: 14px; font-weight: 800;
+    padding: 11px 18px; border-radius: 10px; cursor:pointer;
+    border: 1.5px solid transparent;
+    display:inline-flex; align-items:center; gap:8px;
+    transition: transform .08s, box-shadow .15s, background .15s, border-color .15s;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn svg{ width:17px; height:17px; }
+  .btn-primary{
+    background: var(--es-red); color:#fff;
+    box-shadow: 0 4px 12px rgba(226,0,26,.28);
+  }
+  .btn-primary:hover{ background: var(--es-red-dark); }
+  .btn-ghost{
+    background:#fff; color: var(--ink); border-color: var(--line-strong);
+  }
+  .btn-ghost:hover{ border-color: var(--ink); background:#fafbfd; }
+  .btn-danger{
+    background:#fff; color: var(--es-red); border-color: var(--es-red);
+  }
+  .btn-danger:hover{ background: var(--es-red); color:#fff; }
+  .btn-add{ background: var(--ink); color:#fff; border-color: var(--ink); }
+  .btn-add:hover{ background:#000; }
+
+  /* R.b. cell: number stacked above a small remove (×) control */
+  .col-no .no-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+  }
+  .row-remove{
+    appearance:none; -webkit-appearance:none; border:none; background:transparent;
+    color:#c2c8d2; font-size:16px; line-height:1; cursor:pointer; font-weight:900;
+    width:18px; height:18px; border-radius:5px; padding:0;
+    display:flex; align-items:center; justify-content:center;
+    transition: background .14s, color .14s;
+  }
+  .row-remove:hover{ background: var(--es-red-soft); color: var(--es-red); }
+
+  /* inline 'Saved ✓' confirmation chip near the action bar */
+  .save-flag{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12.5px; font-weight:800; color: var(--ok);
+    background:#eafaf0; border:1.5px solid #bfe9cf;
+    padding:7px 12px; border-radius:9px;
+    opacity:0; transform: translateY(2px);
+    transition: opacity .25s, transform .25s;
+    pointer-events:none;
+  }
+  .save-flag.show{ opacity:1; transform: translateY(0); }
+
+  .toast{
+    margin-left:auto; font-size:13px; font-weight:700; color:var(--ok);
+    opacity:0; transition: opacity .25s; min-height: 18px;
+  }
+  .toast.show{ opacity:1; }
+  .toast.warn{ color: var(--es-red-dark); }
+
+  .footnote{
+    padding: 0 26px 22px; color:#98a1ae; font-size: 11px; font-weight:600;
+  }
+
+  /* ---------------- RESPONSIVE (phone) ---------------- */
+  @media (max-width: 720px){
+    body{ padding: 12px 8px 40px; }
+    .header{ grid-template-columns: 1fr; text-align:center; justify-items:center; }
+    .meta .field{ min-width: 100%; }
+    .actions{ justify-content:center; }
+    .toast{ margin-left:0; width:100%; text-align:center; }
+  }
+
+  /* ============================================================
+     PRINT — refined A4 portrait official form
+     Site options STACKED VERTICALLY (checkbox style, chosen = red).
+     Red brand header repeats on every page.
+     ============================================================ */
+  @media print{
+    @page{ size: A4 portrait; margin: 9mm 8mm; }
+
+    html,body{
+      background:#fff !important;
+      padding:0; margin:0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-size: 11px;
+    }
+    .sheet{
+      box-shadow:none !important; border:none !important;
+      border-radius:0 !important; max-width:none !important;
+    }
+    /* hide all screen-only chrome */
+    .summary, .actions, .footnote, .toast, .save-flag,
+    .sign-clear, .sign-box .hint, .sites-print{ display:none !important; }
+
+    /* ---- header: clean letterhead (logo left, titles, strong red rule) ---- */
+    .header{
+      display:flex !important; align-items:center; gap:16px;
+      padding: 4px 0 10px; margin-bottom: 12px;
+      border-bottom: 3px solid var(--es-red) !important;
+    }
+    .header::after{ display:none; }
+    .brand{ flex:0 0 auto; display:flex; align-items:center; }
+    .brand-logo{ height: 50px; display:block; }
+    .titles{ flex:1 1 auto; min-width:0; }
+    .titles h1{
+      font-size: 17.5px; font-weight:800; letter-spacing:.5px; line-height:1.1; margin:0;
+    }
+    .titles h1 .slash{ color: var(--es-red) !important;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .titles .subtitle{ font-size: 9.5px; color:#555; margin-top:4px; letter-spacing:.2px; }
+
+    /* ---- meta: clean inline form lines ---- */
+    .meta{
+      background:#fff !important; border-bottom: none;
+      padding: 0 0 9px; gap: 5px 40px; margin-bottom: 4px;
+    }
+    .field{
+      flex-direction: row !important; align-items: baseline; gap: 8px;
+      min-width: auto; flex: 1 1 auto;
+    }
+    .field label{
+      font-size: 9.5px; color:#000; font-weight:800; white-space:nowrap;
+      letter-spacing:.3px;
+    }
+    .field input{
+      border:none; border-bottom: 1.1px solid #000; border-radius:0;
+      padding: 1px 3px; font-size: 11.5px; font-weight:700;
+      box-shadow:none !important; min-width: 160px; flex:1;
+    }
+
+    /* ---- table ---- */
+    .table-wrap{ overflow: visible; padding:0; }
+    table.log{ min-width: 0; width:100%; font-size: 9.5px; table-layout: fixed; }
+    table.log thead{ display: table-header-group; }        /* repeat header on every page */
+    table.log thead th{
+      position: static;
+      background: var(--es-red) !important; color:#fff !important;
+      padding: 5px 5px; font-size: 8.5px; line-height:1.15;
+      border: .8px solid #fff;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    table.log thead th .en{ font-size:6.8px; opacity:.92; margin-top:1px; }
+    table.log tbody td{
+      padding: 4px 5px; border: .7px solid #b9c0ca !important;
+      background:#fff !important; vertical-align: middle;
+    }
+    table.log tbody tr:nth-child(even) td{ background:#f5f7fa !important; }
+    table.log tbody tr{ break-inside: avoid; }
+
+    .col-no{ width: 5%; }
+    .col-name{ width: 25%; }
+    .col-site{ width: 16%; }
+    .col-time{ width: 11%; }
+    .col-hours{ width: 8%; }
+    .col-sign{ width: 24%; }
+
+    .col-no .num{
+      background: var(--ink) !important; color:#fff !important;
+      width:16px; height:16px; border-radius:3px; font-size:9px;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+
+    /* inputs become plain printed text/lines */
+    .cell-input{
+      border:none !important; box-shadow:none !important;
+      background:transparent !important; padding:1px 2px;
+      font-size: 10px; -webkit-text-fill-color:#000; color:#000;
+    }
+    .name-input{ font-weight:700; }
+    .hours-input{ background:transparent !important; color:#000 !important; font-weight:800; }
+    .time-input{ text-align:center; }
+
+    /* ---- SITE: print ONLY the selected option (compact → fits one page) ---- */
+    .sites{ display:block !important; text-align:center; }
+    .sites .chip{ display:none !important; }            /* hide all options by default */
+    .sites .chip[aria-pressed="true"]{                  /* show ONLY the chosen one */
+      display:inline-flex !important; align-items:center; gap:0;
+      background: var(--es-red) !important; color:#fff !important;
+      border:1px solid var(--es-red) !important; font-weight:800;
+      padding: 2.5px 11px !important; font-size: 9.5px !important;
+      border-radius: 5px !important; box-shadow:none !important; white-space:nowrap;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+    .sites .chip[aria-pressed="true"] .tick{ display:none !important; }
+    /* blank rows: a subtle dash so an unassigned worker reads clearly */
+    .sites.no-pick::after{ content:"—"; color:#b0b0b0; font-size:11px; }
+
+    /* dynamic-row controls hidden; cleaner cells on paper */
+    .row-remove{ display:none !important; }
+    .col-no .no-wrap{ gap:0 !important; }
+    /* hide the native time-picker clock icon so empty cells aren't cluttered */
+    input[type="time"]::-webkit-calendar-picker-indicator{ display:none !important; }
+    /* tidy grid: center the short columns (header + body) */
+    table.log thead th.col-no, table.log thead th.col-site,
+    table.log thead th.col-time, table.log thead th.col-hours{ text-align:center; }
+    table.log td.col-time, table.log td.col-hours{ text-align:center; }
+
+    /* signature prints as a blank line */
+    .sign-box{
+      border:none !important; border-bottom: 1px solid #000 !important;
+      border-radius:0; height: 26px; background:transparent !important;
+    }
+    .sign-box canvas{ filter: contrast(1.3); }
+
+    /* ---- work done ---- */
+    .workdone{ padding: 10px 0 0; break-inside: avoid; overflow:visible; }
+    .gear-watermark{
+      opacity:.06 !important; width:130px; height:130px;
+      right:6px; bottom:0;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+    .workdone h2{ font-size: 11px; }
+    .workdone h2::before{ background: var(--es-red) !important;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .workdone textarea{
+      border:1px solid #888 !important; border-radius:6px;
+      min-height: 60px; font-size: 11px; box-shadow:none !important;
+      background:#fff !important;
+    }
+  }
+
+  /* ---------------- HOW-TO PANEL (screen only) ---------------- */
+  .howto{
+    background: linear-gradient(180deg,#fff,#fafbfd);
+    border-bottom: 1px solid var(--line);
+    padding: 13px 26px 15px;
+  }
+  .howto > summary{
+    cursor:pointer; list-style:none; font-weight:800; font-size:13.5px;
+    color: var(--ink); display:flex; align-items:center; gap:10px;
+  }
+  .howto > summary::-webkit-details-marker{ display:none; }
+  .howto > summary .ico{
+    width:23px; height:23px; border-radius:7px; flex:0 0 auto;
+    background: var(--es-red); color:#fff; font-weight:900; font-size:14px;
+    display:inline-grid; place-items:center;
+  }
+  .howto > summary .chev{ margin-left:auto; color: var(--ink-soft); transition: transform .2s; }
+  .howto[open] > summary .chev{ transform: rotate(180deg); }
+  .howto ol{ margin: 13px 0 2px; padding:0; list-style:none; display:grid; gap:9px; }
+  .howto li{
+    display:flex; gap:11px; align-items:flex-start;
+    font-size: 12.5px; color: var(--ink-soft); line-height:1.55;
+  }
+  .howto li b{ color: var(--ink); }
+  .howto li .en{ opacity:.62; }
+  .howto li .step{
+    flex:0 0 auto; width:21px; height:21px; border-radius:50%;
+    background: var(--es-red-soft); color: var(--es-red-dark);
+    font-weight:800; font-size:11px; display:inline-grid; place-items:center; margin-top:1px;
+  }
+
+  /* ---------------- PRINT-ONLY FOOTER (filled-form look) ---------------- */
+  .print-footer{ display:none; }
+  @media print{
+    .howto{ display:none !important; }
+    .print-footer{
+      display:flex !important; justify-content:space-between; align-items:flex-end;
+      gap: 18px; margin: 12px 0 0; padding: 9px 0 0;
+      border-top: 1.6px solid var(--es-red) !important; break-inside: avoid;
+      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+    .pf-stats{ display:flex; flex-direction:column; gap:5px; color:#000; }
+    .pf-row{ display:flex; flex-wrap:wrap; gap: 4px 16px; align-items:baseline; }
+    .pf-title{ font-size: 9px; font-weight:800; letter-spacing:.4px; color:#000; }
+    .pf-chip{
+      font-size: 10px; font-weight:700; color:#000;
+      border:1px solid #b9c0ca; border-radius:5px; padding: 2px 9px;
+      background:#fff;
+    }
+    .pf-chip b{ color: var(--es-red) !important; font-size: 11.5px; }
+    .pf-row-sum{ font-size: 9.5px; font-weight:700; color:#000; margin-top:1px; }
+    .pf-row-sum b{ color: var(--es-red) !important; font-size: 12px; }
+    .pf-signs{ display:flex; gap: 24px; }
+    .pf-sign{ text-align:center; min-width: 150px; }
+    .pf-line{ display:block; height: 26px; border-bottom: 1px solid #000; }
+    .pf-cap{ display:block; font-size: 8px; font-weight:700; color:#000; margin-top:2px; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet" id="sheet">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="header">
+    <div class="brand">
+      <img src="data:image/png;base64,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" alt="ES ENERGOSERVIS" class="brand-logo"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';">
+      <span class="brand-fallback"><span class="es-grey">ES&nbsp;ENERGO</span><span class="es-red">SERVIS</span></span>
+    </div>
+    <div class="titles">
+      <h1>EVIDENCIJA RADA <span class="slash">/</span> DAILY WORK LOG</h1>
+      <p class="subtitle">Dnevni izvještaj o prisustvu na radu / Daily Attendance Report</p>
+    </div>
+  </header>
+
+  <!-- ===================== HOW TO USE (screen only) ===================== -->
+  <details class="howto" open>
+    <summary>
+      <span class="ico">?</span>
+      Kako se koristi / How to use
+      <span class="chev">▾</span>
+    </summary>
+    <ol>
+      <li><span class="step">1</span><span><b>Datum i odgovorni:</b> datum je već postavljen na danas — upiši glavnog/odgovornog (supervizora). <span class="en">/ Check the date and enter the supervisor.</span></span></li>
+      <li><span class="step">2</span><span><b>Gradilište:</b> za svakog radnika klikni jedno — <b>Vršac</b>, <b>Sremska Rača</b> ili <b>Radionica</b> (oboji se crveno; ponovni klik poništava). <span class="en">/ Click one site per worker.</span></span></li>
+      <li><span class="step">3</span><span><b>Sati:</b> upiši <b>Početak</b> i <b>Završetak</b> — kolona „Sati" se popunjava sama. <span class="en">/ Enter start &amp; end; hours auto-calculate.</span></span></li>
+      <li><span class="step">4</span><span><b>Potpis:</b> radnik se potpiše u polju — prstom na telefonu/tabletu ili mišem. <span class="en">/ The worker signs in the box.</span></span></li>
+      <li><span class="step">5</span><span><b>Radovi:</b> dole u polju opiši izvršene radove. <span class="en">/ Describe the work done below.</span></span></li>
+      <li><span class="step">＋</span><span><b>Dodaj/ukloni radnika:</b> dugme <b>„Dodaj radnika"</b> dodaje novi red; <b>×</b> pored rednog broja uklanja red. <span class="en">/ Add a worker, or remove a row with ×.</span></span></li>
+      <li><span class="step">6</span><span><b>Sačuvaj / Štampaj:</b> klikni <b>Sačuvaj</b> da sačuvaš na uređaju, pa <b>Štampaj / PDF</b> → „Sačuvaj kao PDF" za čist A4. <span class="en">/ Save, then Print → Save as PDF (A4).</span></span></li>
+    </ol>
+  </details>
+
+  <!-- ===================== META FIELDS ===================== -->
+  <section class="meta">
+    <div class="field">
+      <label for="f-date">DATUM / DATE:</label>
+      <input type="date" id="f-date">
+    </div>
+    <div class="field">
+      <label for="f-supervisor">GLAVNI / ODGOVORNI (SUPERVISOR):</label>
+      <input type="text" id="f-supervisor" placeholder="Ime i prezime / Full name" autocomplete="off">
+    </div>
+  </section>
+
+  <!-- ===================== LIVE SUMMARY STRIP ===================== -->
+  <section class="summary" id="summary" aria-label="Pregled / Summary">
+    <div class="stat">
+      <div class="k">Ukupno sati / Total hours</div>
+      <div class="v"><span id="s-hours">0</span> <small>h</small></div>
+    </div>
+    <div class="stat">
+      <div class="k">Prisutni / Present</div>
+      <div class="v"><span id="s-present">0</span> <small>/ <span id="s-total">16</span></small></div>
+    </div>
+    <div class="stat is-site">
+      <div class="k"><span class="dot"></span>Vršac</div>
+      <div class="v" id="s-vrsac">0</div>
+    </div>
+    <div class="stat is-site">
+      <div class="k"><span class="dot"></span>Sremska Rača</div>
+      <div class="v" id="s-raca">0</div>
+    </div>
+    <div class="stat is-site">
+      <div class="k"><span class="dot"></span>Radionica</div>
+      <div class="v" id="s-radionica">0</div>
+    </div>
+  </section>
+
+  <!-- ===================== MAIN TABLE ===================== -->
+  <div class="table-wrap">
+    <table class="log">
+      <thead>
+        <tr>
+          <th class="col-no">R.b.<span class="en">No.</span></th>
+          <th class="col-name">Ime i prezime radnika<span class="en">Worker's Full Name</span></th>
+          <th class="col-site">Gradilište<span class="en">Construction Site</span></th>
+          <th class="col-time">Početak<span class="en">Start</span></th>
+          <th class="col-time">Završetak<span class="en">End</span></th>
+          <th class="col-hours">Sati<span class="en">Hours</span></th>
+          <th class="col-sign">Potpis radnika<span class="en">Signature</span></th>
+        </tr>
+      </thead>
+      <tbody id="rows"><!-- rows injected by JS --></tbody>
+    </table>
+  </div>
+
+  <!-- ===================== WORK DONE ===================== -->
+  <section class="workdone">
+    <!-- Faint ES gear watermark (print-color-adjust:exact so it survives printing) -->
+    <div class="gear-watermark" aria-hidden="true">
+      <svg viewBox="0 0 100 100" fill="none">
+        <path fill="currentColor" d="M50 3l5.9 3 6.6-1.3 4.7 4.7 6.7.9 2.9 6.1 6.1 2.9-.9 6.7 4.7 4.7-1.3 6.6L95 50l-3 5.9 1.3 6.6-4.7 4.7-.9 6.7-6.1 2.9-2.9 6.1-6.7-.9-4.7 4.7-6.6-1.3L50 95l-5.9-3-6.6 1.3-4.7-4.7-6.7-.9-2.9-6.1L17 79.7l.9-6.7-4.7-4.7 1.3-6.6L5 50l3-5.9-1.3-6.6 4.7-4.7.9-6.7 6.1-2.9 2.9-6.1 6.7.9 4.7-4.7 6.6 1.3L50 3zm0 16a31 31 0 1 0 0 62 31 31 0 0 0 0-62z"/>
+        <path fill="#fff" d="M50 27a23 23 0 1 0 0 46 23 23 0 0 0 0-46zm0 8a15 15 0 0 1 13.5 8.5L50 50V35z"/>
+        <path fill="currentColor" d="M52 29a21 21 0 0 1 16.8 10.7L52 49.6V29z"/>
+      </svg>
+    </div>
+    <h2>IZVRŠENI RADOVI / ODRADJENO — WORK DONE / COMPLETED TASKS</h2>
+    <textarea id="f-workdone" placeholder="Opišite izvršene radove… / Describe the work done…"></textarea>
+  </section>
+
+  <!-- ===================== PRINT-ONLY FOOTER (filled-form look) ===================== -->
+  <section class="print-footer" aria-hidden="true">
+    <div class="pf-stats">
+      <div class="pf-row">
+        <b class="pf-title">RASPORED PO GRADILIŠTU / DISTRIBUTION BY SITE</b>
+      </div>
+      <div class="pf-row">
+        <span class="pf-chip">Vršac: <b id="pf-vrsac">0</b></span>
+        <span class="pf-chip">Sremska Rača: <b id="pf-raca">0</b></span>
+        <span class="pf-chip">Radionica: <b id="pf-radionica">0</b></span>
+      </div>
+      <div class="pf-row pf-row-sum">
+        <span>Prisutno / Present: <b id="pf-present">0</b> / <span id="pf-rowcount">16</span></span>
+        <span>Ukupno sati / Total hours: <b id="pf-hours">0</b> h</span>
+      </div>
+    </div>
+    <div class="pf-signs">
+      <div class="pf-sign">
+        <span class="pf-line"></span>
+        <span class="pf-cap">Glavni / Odgovorni (Supervisor)</span>
+      </div>
+      <div class="pf-sign">
+        <span class="pf-line"></span>
+        <span class="pf-cap">Potpis i pečat / Signature &amp; stamp</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ACTION BAR ===================== -->
+  <section class="actions">
+    <button class="btn btn-primary" id="btn-print" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Štampaj / PDF
+    </button>
+    <button class="btn btn-ghost" id="btn-save" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Sačuvaj
+    </button>
+    <button class="btn btn-ghost" id="btn-load" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Učitaj
+    </button>
+    <button class="btn btn-add" id="btn-add" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Dodaj radnika
+    </button>
+    <button class="btn btn-danger" id="btn-reset" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      Resetuj
+    </button>
+    <span class="save-flag" id="save-flag" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Sačuvano / Saved
+    </span>
+    <span class="toast" id="toast" role="status" aria-live="polite"></span>
+  </section>
+
+  <p class="footnote">ES ENERGOSERVIS · Evidencija rada / Daily Work Log · Podaci se čuvaju lokalno na ovom uređaju (localStorage). / Data is stored locally on this device.</p>
+
+</div>
+
+<script>
+/* ============================================================
+   ES ENERGOSERVIS — Daily Work Log
+   Vanilla JS. Dynamic add/remove rows. No deps, no network.
+   ============================================================ */
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "es_energoservis_worklog_v1";
+  var SITES = ["Vršac", "Sremska Rača", "Radionica"];
+  var NAMES = [
+    "Nedeljko Svilar", "Hans Lal", "Paramjit Singh", "Divakar Kumar",
+    "Bupinder Singh", "Somvir", "Lovely", "Plam Lal",
+    "Baljinder Singh", "Gurdeep Singh", "Gurdev Singh", "Rahul Solanki",
+    "Harjindr Bhutta", "Ravi Kumar", "Makhan Singh", "Balvinder"
+  ];
+
+  var rowsEl     = document.getElementById("rows");
+  var dateEl     = document.getElementById("f-date");
+  var supEl      = document.getElementById("f-supervisor");
+  var workEl     = document.getElementById("f-workdone");
+  var toastEl    = document.getElementById("toast");
+  var saveFlagEl = document.getElementById("save-flag");
+
+  var sHours     = document.getElementById("s-hours");
+  var sPresent   = document.getElementById("s-present");
+  var sTotal     = document.getElementById("s-total");
+  var sVrsac     = document.getElementById("s-vrsac");
+  var sRaca      = document.getElementById("s-raca");
+  var sRadionica = document.getElementById("s-radionica");
+
+  /* -------------------- helpers -------------------- */
+  function todayISO(){
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    return d.getFullYear() + "-" + m + "-" + day;
+  }
+  function toMinutes(t){
+    if(!t) return null;
+    var p = t.split(":");
+    if(p.length < 2) return null;
+    var h = parseInt(p[0], 10), m = parseInt(p[1], 10);
+    if(isNaN(h) || isNaN(m)) return null;
+    return h * 60 + m;
+  }
+  function formatHours(n){
+    if(typeof n !== "number" || isNaN(n)) return "";
+    return n.toFixed(2).replace(/\.?0+$/, "");
+  }
+  function computeHours(start, end){
+    var s = toMinutes(start), e = toMinutes(end);
+    if(s === null || e === null) return "";
+    var diff = e - s;
+    if(diff <= 0) diff += 24 * 60;   // overnight shift
+    return formatHours(Math.round((diff / 60) * 100) / 100);
+  }
+  function setText(id, val){
+    var el = document.getElementById(id);
+    if(el) el.textContent = val;
+  }
+  var toastTimer = null;
+  function toast(msg, isWarn){
+    toastEl.textContent = msg;
+    toastEl.classList.toggle("warn", !!isWarn);
+    toastEl.classList.add("show");
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 2600);
+  }
+  var flagTimer = null;
+  function flashSaveFlag(){
+    saveFlagEl.classList.add("show");
+    if(flagTimer) clearTimeout(flagTimer);
+    flagTimer = setTimeout(function(){ saveFlagEl.classList.remove("show"); }, 2600);
+  }
+
+  /* -------------------- site single-select -------------------- */
+  function onChipClick(group, chip){
+    var wasOn = chip.getAttribute("aria-pressed") === "true";
+    group.querySelectorAll(".chip").forEach(function(c){
+      c.setAttribute("aria-pressed", "false");
+      c.setAttribute("aria-checked", "false");
+    });
+    if(!wasOn){
+      chip.setAttribute("aria-pressed", "true");
+      chip.setAttribute("aria-checked", "true");
+    }
+    refreshNoPick(group);
+    updateSummary();
+  }
+  function refreshNoPick(group){
+    var any = group.querySelector('.chip[aria-pressed="true"]');
+    group.classList.toggle("no-pick", !any);
+  }
+  function selectedSite(tr){
+    var on = tr.querySelector('.chip[aria-pressed="true"]');
+    return on ? on.dataset.site : "";
+  }
+
+  /* -------------------- signature canvas (per-row object) -------------------- */
+  function initCanvas(sign){
+    var canvas = sign.canvas;
+    var rect = canvas.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.max(1, Math.round(rect.width));
+    var h = Math.max(1, Math.round(rect.height));
+    var prev = sign.drawn ? canvas.toDataURL() : null;   // keep ink across resize
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    var ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#16243d";
+    sign.ctx = ctx;
+    if(prev){
+      var img = new Image();
+      img.onload = function(){ ctx.drawImage(img, 0, 0, w, h); };
+      img.src = prev;
+    }
+  }
+  function ptPos(canvas, ev){
+    var r = canvas.getBoundingClientRect();
+    return { x: ev.clientX - r.left, y: ev.clientY - r.top };
+  }
+  function attachSignHandlers(sign){
+    var canvas = sign.canvas;
+    var drawing = false, last = null;
+    function start(ev){
+      ev.preventDefault();
+      drawing = true;
+      last = ptPos(canvas, ev);
+      if(canvas.setPointerCapture && ev.pointerId !== undefined){
+        try{ canvas.setPointerCapture(ev.pointerId); }catch(e){}
+      }
+    }
+    function move(ev){
+      if(!drawing) return;
+      ev.preventDefault();
+      var p = ptPos(canvas, ev);
+      var ctx = sign.ctx;
+      if(!ctx) return;
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      last = p;
+      if(!sign.drawn){ sign.drawn = true; sign.box.classList.add("has-ink"); }
+    }
+    function end(){ drawing = false; last = null; }
+    canvas.addEventListener("pointerdown", start);
+    canvas.addEventListener("pointermove", move);
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointerleave", end);
+    canvas.addEventListener("pointercancel", end);
+  }
+  function clearSignature(sign){
+    if(!sign.ctx) return;
+    var rect = sign.canvas.getBoundingClientRect();
+    sign.ctx.clearRect(0, 0, rect.width, rect.height);
+    sign.drawn = false;
+    sign.box.classList.remove("has-ink");
+  }
+
+  /* -------------------- build ONE row -------------------- */
+  function createRow(name){
+    var tr = document.createElement("tr");
+
+    /* R.b. + remove button */
+    var tdNo = document.createElement("td");
+    tdNo.className = "col-no";
+    var noWrap = document.createElement("div");
+    noWrap.className = "no-wrap";
+    var num = document.createElement("span");
+    num.className = "num";
+    var rm = document.createElement("button");
+    rm.type = "button";
+    rm.className = "row-remove";
+    rm.title = "Ukloni red / Remove row";
+    rm.setAttribute("aria-label", "Ukloni red");
+    rm.textContent = "×";
+    rm.addEventListener("click", function(){ removeRow(tr); });
+    noWrap.appendChild(num);
+    noWrap.appendChild(rm);
+    tdNo.appendChild(noWrap);
+    tr.appendChild(tdNo);
+
+    /* name */
+    var tdName = document.createElement("td");
+    tdName.className = "col-name";
+    var nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "cell-input name-input";
+    nameInput.value = name || "";
+    nameInput.placeholder = "Ime i prezime";
+    nameInput.dataset.field = "name";
+    tdName.appendChild(nameInput);
+    tr.appendChild(tdName);
+
+    /* site chips */
+    var tdSite = document.createElement("td");
+    tdSite.className = "col-site";
+    var sitesWrap = document.createElement("div");
+    sitesWrap.className = "sites no-pick";
+    sitesWrap.setAttribute("role", "radiogroup");
+    SITES.forEach(function(site){
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.dataset.site = site;
+      chip.setAttribute("aria-pressed", "false");
+      chip.setAttribute("role", "radio");
+      chip.setAttribute("aria-checked", "false");
+      chip.innerHTML = '<span class="tick"></span>' + site;
+      chip.addEventListener("click", function(){ onChipClick(sitesWrap, chip); });
+      sitesWrap.appendChild(chip);
+    });
+    tdSite.appendChild(sitesWrap);
+    tr.appendChild(tdSite);
+
+    /* start time */
+    var tdStart = document.createElement("td");
+    tdStart.className = "col-time";
+    var startInput = document.createElement("input");
+    startInput.type = "time";
+    startInput.className = "cell-input time-input";
+    startInput.dataset.field = "start";
+    tdStart.appendChild(startInput);
+    tr.appendChild(tdStart);
+
+    /* end time */
+    var tdEnd = document.createElement("td");
+    tdEnd.className = "col-time";
+    var endInput = document.createElement("input");
+    endInput.type = "time";
+    endInput.className = "cell-input time-input";
+    endInput.dataset.field = "end";
+    tdEnd.appendChild(endInput);
+    tr.appendChild(tdEnd);
+
+    /* hours (auto, editable override) */
+    var tdHours = document.createElement("td");
+    tdHours.className = "col-hours";
+    var hoursInput = document.createElement("input");
+    hoursInput.type = "text";
+    hoursInput.inputMode = "decimal";
+    hoursInput.className = "cell-input hours-input";
+    hoursInput.dataset.field = "hours";
+    hoursInput.dataset.auto = "1";
+    tdHours.appendChild(hoursInput);
+    tr.appendChild(tdHours);
+
+    function recompute(){
+      if(hoursInput.dataset.auto === "1"){
+        hoursInput.value = computeHours(startInput.value, endInput.value);
+      }
+      updateSummary();
+    }
+    startInput.addEventListener("input", recompute);
+    endInput.addEventListener("input", recompute);
+    hoursInput.addEventListener("input", function(){
+      if(hoursInput.value.trim() === ""){
+        hoursInput.dataset.auto = "1";
+        hoursInput.value = computeHours(startInput.value, endInput.value);
+      }else{
+        hoursInput.dataset.auto = "0";
+      }
+      updateSummary();
+    });
+
+    /* signature */
+    var tdSign = document.createElement("td");
+    tdSign.className = "col-sign";
+    var box = document.createElement("div");
+    box.className = "sign-box";
+    var canvas = document.createElement("canvas");
+    var hint = document.createElement("span");
+    hint.className = "hint";
+    hint.textContent = "Potpis / Sign";
+    var clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "sign-clear";
+    clearBtn.setAttribute("aria-label", "Obriši potpis");
+    clearBtn.textContent = "×";
+    box.appendChild(canvas);
+    box.appendChild(hint);
+    box.appendChild(clearBtn);
+    tdSign.appendChild(box);
+    tr.appendChild(tdSign);
+
+    var sign = { box: box, canvas: canvas, ctx: null, drawn: false };
+    tr.signRef = sign;
+    attachSignHandlers(sign);
+    clearBtn.addEventListener("click", function(){ clearSignature(sign); });
+
+    return tr;
+  }
+
+  /* -------------------- row management -------------------- */
+  function renumber(){
+    rowsEl.querySelectorAll("tr").forEach(function(tr, i){
+      var num = tr.querySelector(".num");
+      if(num) num.textContent = (i + 1);
+    });
+  }
+  function buildDefaultRows(){
+    rowsEl.innerHTML = "";
+    NAMES.forEach(function(n){ rowsEl.appendChild(createRow(n)); });
+    rowsEl.querySelectorAll("tr").forEach(function(tr){ initCanvas(tr.signRef); });
+    renumber();
+  }
+  function addRow(name, focus){
+    var tr = createRow(name || "");
+    rowsEl.appendChild(tr);
+    initCanvas(tr.signRef);
+    renumber();
+    updateSummary();
+    if(focus){
+      var ni = tr.querySelector(".name-input");
+      if(ni) ni.focus();
+      if(tr.scrollIntoView) tr.scrollIntoView({ block: "nearest" });
+    }
+  }
+  function removeRow(tr){
+    if(rowsEl.querySelectorAll("tr").length <= 1){
+      toast("Mora ostati bar jedan red / Keep at least one row", true);
+      return;
+    }
+    tr.remove();
+    renumber();
+    updateSummary();
+  }
+
+  /* -------------------- live summary -------------------- */
+  function updateSummary(){
+    var totalHours = 0, present = 0;
+    var counts = { "Vršac": 0, "Sremska Rača": 0, "Radionica": 0 };
+
+    var trs = rowsEl.querySelectorAll("tr");
+    trs.forEach(function(tr){
+      var site = selectedSite(tr);
+      var hoursInput = tr.querySelector('[data-field="hours"]');
+      var hv = parseFloat(((hoursInput && hoursInput.value) || "").replace(",", "."));
+      var hasHours = !isNaN(hv) && hv > 0;
+      if(hasHours) totalHours += hv;
+      if(site || hasHours) present++;
+      if(site && counts.hasOwnProperty(site)) counts[site]++;
+    });
+
+    var rowCount = trs.length;
+    sHours.textContent = formatHours(totalHours) || "0";
+    sPresent.textContent = present;
+    if(sTotal) sTotal.textContent = rowCount;
+    sVrsac.textContent = counts["Vršac"];
+    sRaca.textContent = counts["Sremska Rača"];
+    sRadionica.textContent = counts["Radionica"];
+
+    /* mirror into the print-only footer */
+    setText("pf-hours", sHours.textContent);
+    setText("pf-present", present);
+    setText("pf-rowcount", rowCount);
+    setText("pf-vrsac", counts["Vršac"]);
+    setText("pf-raca", counts["Sremska Rača"]);
+    setText("pf-radionica", counts["Radionica"]);
+  }
+
+  /* -------------------- save / load / reset -------------------- */
+  function collectState(){
+    var rows = [];
+    rowsEl.querySelectorAll("tr").forEach(function(tr){
+      var sign = tr.signRef;
+      var hoursInput = tr.querySelector('[data-field="hours"]');
+      rows.push({
+        name:  tr.querySelector('[data-field="name"]').value,
+        site:  selectedSite(tr),
+        start: tr.querySelector('[data-field="start"]').value,
+        end:   tr.querySelector('[data-field="end"]').value,
+        hours: hoursInput.value,
+        auto:  hoursInput.dataset.auto,
+        sign:  (sign && sign.drawn) ? sign.canvas.toDataURL("image/png") : ""
+      });
+    });
+    return { date: dateEl.value, supervisor: supEl.value, work: workEl.value, rows: rows };
+  }
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState()));
+      toast("Sačuvano / Saved ✓");
+      flashSaveFlag();
+    }catch(e){
+      toast("Greška pri čuvanju / Save error", true);
+    }
+  }
+  function fillRow(tr, rd){
+    if(typeof rd.name === "string") tr.querySelector('[data-field="name"]').value = rd.name;
+    tr.querySelectorAll(".chip").forEach(function(c){
+      var on = (c.dataset.site === rd.site);
+      c.setAttribute("aria-pressed", on ? "true" : "false");
+      c.setAttribute("aria-checked", on ? "true" : "false");
+    });
+    var group = tr.querySelector(".sites");
+    if(group) refreshNoPick(group);
+    tr.querySelector('[data-field="start"]').value = rd.start || "";
+    tr.querySelector('[data-field="end"]').value = rd.end || "";
+    var hoursInput = tr.querySelector('[data-field="hours"]');
+    hoursInput.value = rd.hours || "";
+    hoursInput.dataset.auto = (rd.auto === "0") ? "0" : "1";
+    var sign = tr.signRef;
+    clearSignature(sign);
+    if(rd.sign && sign && sign.ctx){
+      var img = new Image();
+      img.onload = function(){
+        var rect = sign.canvas.getBoundingClientRect();
+        sign.ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        sign.drawn = true;
+        sign.box.classList.add("has-ink");
+      };
+      img.src = rd.sign;
+    }
+  }
+  function applyState(data){
+    if(!data) return false;
+    if(typeof data.date === "string") dateEl.value = data.date;
+    if(typeof data.supervisor === "string") supEl.value = data.supervisor;
+    if(typeof data.work === "string") workEl.value = data.work;
+
+    var saved = data.rows || [];
+    rowsEl.innerHTML = "";
+    if(saved.length){
+      saved.forEach(function(rd){ rowsEl.appendChild(createRow(rd.name || "")); });
+    }else{
+      NAMES.forEach(function(n){ rowsEl.appendChild(createRow(n)); });
+    }
+    var trs = rowsEl.querySelectorAll("tr");
+    trs.forEach(function(tr){ initCanvas(tr.signRef); });
+    saved.forEach(function(rd, i){ if(trs[i]) fillRow(trs[i], rd); });
+    renumber();
+    updateSummary();
+    return true;
+  }
+  function loadState(announce){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){ if(announce) toast("Nema sačuvanih podataka / Nothing saved", true); return false; }
+      applyState(JSON.parse(raw));
+      if(announce) toast("Učitano / Loaded ✓");
+      return true;
+    }catch(e){
+      if(announce) toast("Greška pri učitavanju / Load error", true);
+      return false;
+    }
+  }
+  function resetForm(){
+    if(!confirm("Resetovati formular? Svi uneseni podaci biće obrisani.\n\nReset the form? All entered data will be cleared.")) return;
+    dateEl.value = todayISO();
+    supEl.value = "";
+    workEl.value = "";
+    buildDefaultRows();
+    updateSummary();
+    toast("Resetovano / Reset ✓");
+  }
+
+  /* -------------------- wiring & init -------------------- */
+  function wireGlobal(){
+    document.getElementById("btn-print").addEventListener("click", function(){ window.print(); });
+    document.getElementById("btn-save").addEventListener("click", saveState);
+    document.getElementById("btn-load").addEventListener("click", function(){ loadState(true); });
+    document.getElementById("btn-reset").addEventListener("click", resetForm);
+    var addBtn = document.getElementById("btn-add");
+    if(addBtn) addBtn.addEventListener("click", function(){ addRow("", true); });
+
+    rowsEl.addEventListener("input", function(e){
+      if(e.target.dataset && e.target.dataset.field === "name") updateSummary();
+    });
+  }
+  var resizeTimer = null;
+  window.addEventListener("resize", function(){
+    if(resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function(){
+      rowsEl.querySelectorAll("tr").forEach(function(tr){ initCanvas(tr.signRef); });
+    }, 200);
+  });
+  function init(){
+    buildDefaultRows();
+    wireGlobal();
+    dateEl.value = todayISO();
+    updateSummary();
+    if(localStorage.getItem(STORAGE_KEY)){ loadState(false); }
+  }
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  }else{
+    init();
+  }
+})();
+</script>
+</body>
+</html>
