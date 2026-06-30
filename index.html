@@ -423,158 +423,95 @@
     .toast{ margin-left:0; width:100%; text-align:center; }
   }
 
-  /* ============================================================
-     PRINT — refined A4 portrait official form
-     Site options STACKED VERTICALLY (checkbox style, chosen = red).
-     Red brand header repeats on every page.
-     ============================================================ */
+  /* Bold official — heavy red header, full grey grid, brand-dark outer border so header + body read as ONE table */
   @media print{
     @page{ size: A4 portrait; margin: 9mm 8mm; }
-
-    html,body{
-      background:#fff !important;
-      padding:0; margin:0;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-      font-size: 11px;
-    }
-    .sheet{
-      box-shadow:none !important; max-width:none !important;
-      border: 1.5px solid #2b313b !important;   /* outer frame: every lane aligns inside it */
-      border-radius:0 !important;
-      padding: 12px !important;                  /* uniform inset → header, table, footer all line up */
-      overflow:hidden;
-    }
-    /* hide all screen-only chrome */
+    html,body{ background:#fff !important; padding:0; margin:0;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 11px; }
+    .sheet{ box-shadow:none !important; max-width:none !important;
+      border: 1.5px solid #2b313b !important; border-radius:0 !important;
+      padding: 12px !important; overflow:hidden; }
     .summary, .actions, .footnote, .toast, .save-flag,
     .sign-clear, .sign-box .hint, .sites-print{ display:none !important; }
-
-    /* ---- header: clean letterhead (logo left, titles, strong red rule) ---- */
-    .header{
-      display:flex !important; align-items:center; gap:16px;
-      padding: 4px 0 10px; margin-bottom: 12px;
-      border-bottom: 3px solid var(--es-red) !important;
-    }
+    .header{ display:flex !important; align-items:center; gap:16px;
+      padding: 4px 0 10px; margin-bottom: 12px; border-bottom: 3px solid var(--es-red) !important; }
     .header::after{ display:none; }
     .brand{ flex:0 0 auto; display:flex; align-items:center; }
     .brand-logo{ height: 50px; display:block; }
     .titles{ flex:1 1 auto; min-width:0; }
-    .titles h1{
-      font-size: 17.5px; font-weight:800; letter-spacing:.5px; line-height:1.1; margin:0;
-    }
-    .titles h1 .slash{ color: var(--es-red) !important;
-      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .titles .subtitle{ font-size: 9.5px; color:#555; margin-top:4px; letter-spacing:.2px; }
-
-    /* ---- meta: clean inline form lines ---- */
-    .meta{
-      background:#fff !important; border-bottom: none;
-      padding: 0 0 9px; gap: 5px 40px; margin-bottom: 4px;
-    }
-    .field{
-      flex-direction: row !important; align-items: baseline; gap: 8px;
-      min-width: auto; flex: 1 1 auto;
-    }
-    .field label{
-      font-size: 9.5px; color:#000; font-weight:800; white-space:nowrap;
-      letter-spacing:.3px;
-    }
-    .field input{
-      border:none; border-bottom: 1.1px solid #000; border-radius:0;
-      padding: 1px 3px; font-size: 11.5px; font-weight:700;
-      box-shadow:none !important; min-width: 160px; flex:1;
-    }
-
-    /* ---- table ---- */
+    .titles h1{ font-size: 17.5px; font-weight:800; letter-spacing:.5px; line-height:1.1; margin:0; }
+    .titles h1 .slash{ color: var(--es-red) !important; print-color-adjust: exact !important; }
+    .titles .subtitle{ font-size: 9.5px; color:#555; margin-top:4px; }
+    .meta{ background:#fff !important; border-bottom:none; padding: 0 0 9px; gap: 5px 40px; margin-bottom: 4px; }
+    .field{ flex-direction: row !important; align-items: baseline; gap: 8px; min-width:auto; flex:1 1 auto; }
+    .field label{ font-size: 9.5px; color:#000; font-weight:800; white-space:nowrap; }
+    .field input{ border:none; border-bottom:1.1px solid #000; border-radius:0; padding:1px 3px;
+      font-size: 11.5px; font-weight:700; box-shadow:none !important; min-width:160px; flex:1; }
     .table-wrap{ overflow: visible; padding:0; }
-    table.log{ min-width: 0; width:100%; font-size: 9.5px; table-layout: fixed; }
-    table.log thead{ display: table-header-group; }        /* repeat header on every page */
-    table.log thead th{
-      position: static;
-      background: var(--es-red) !important; color:#fff !important;
-      padding: 5px 5px; font-size: 8.5px; line-height:1.15;
-      border: .8px solid #fff;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    table.log thead th .en{ font-size:6.8px; opacity:.92; margin-top:1px; }
-    table.log tbody td{
-      padding: 4px 5px; border: .7px solid #b9c0ca !important;
-      background:#fff !important; vertical-align: middle;
-    }
-    table.log tbody tr:nth-child(even) td{ background:#f5f7fa !important; }
+
+    /* WOW TABLE — one cohesive unit: collapsed grid + brand-dark outer frame */
+    table.log{ min-width:0; width:100%; font-size: 9.5px; table-layout: fixed;
+      border-collapse: collapse !important; border: 1.6px solid var(--ink) !important;
+      print-color-adjust: exact !important; }
+    table.log thead{ display: table-header-group; }
+
+    /* Heavy red header; column dividers share the body's grey so the vertical grid
+       runs unbroken header→body; a strong dark seam under the header ties it to the frame */
+    table.log thead th{ position: static; background: var(--es-red) !important; color:#fff !important;
+      padding: 6px 5px; font-size: 8.6px; line-height:1.12; font-weight:800;
+      text-transform: uppercase; letter-spacing:.35px; vertical-align: middle;
+      border: .7px solid #aeb6c2 !important;
+      border-bottom: 2px solid var(--ink) !important;
+      print-color-adjust: exact !important; }
+    table.log thead th:first-child{ border-left: none !important; }
+    table.log thead th:last-child{ border-right: none !important; }
+    table.log thead th .en{ display:block; font-size:6.8px; font-weight:600; letter-spacing:.2px;
+      text-transform: none; opacity:.92; margin-top:1px; }
+
+    /* Body: full medium-grey grid, comfortable rows, crisp zebra; verticals align with header */
+    table.log tbody td{ padding: 4.5px 5px; border: .7px solid #aeb6c2 !important;
+      background:#fff !important; vertical-align: middle; height: 22px;
+      print-color-adjust: exact !important; }
+    table.log tbody tr:nth-child(even) td{ background:#eef1f6 !important; }
+    table.log tbody td:first-child{ border-left: none !important; }
+    table.log tbody td:last-child{ border-right: none !important; }
+    table.log tbody tr:last-child td{ border-bottom: none !important; }
     table.log tbody tr{ break-inside: avoid; }
 
-    .col-no{ width: 5%; }
-    .col-name{ width: 25%; }
-    .col-site{ width: 16%; }
-    .col-time{ width: 11%; }
-    .col-hours{ width: 8%; }
-    .col-sign{ width: 24%; }
-
-    .col-no .num{
-      background: var(--ink) !important; color:#fff !important;
-      width:16px; height:16px; border-radius:3px; font-size:9px;
-      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-    }
-
-    /* inputs become plain printed text/lines */
-    .cell-input{
-      border:none !important; box-shadow:none !important;
-      background:transparent !important; padding:1px 2px;
-      font-size: 10px; -webkit-text-fill-color:#000; color:#000;
-    }
+    .col-no{ width: 5%; } .col-name{ width: 25%; } .col-site{ width: 16%; }
+    .col-time{ width: 11%; } .col-hours{ width: 8%; } .col-sign{ width: 24%; }
+    .col-no .num{ background: var(--ink) !important; color:#fff !important; width:16px; height:16px;
+      border-radius:3px; font-size:9px; print-color-adjust: exact !important; }
+    .cell-input{ border:none !important; box-shadow:none !important; background:transparent !important;
+      padding:1px 2px; font-size: 10px; -webkit-text-fill-color:#000; color:#000; }
     .name-input{ font-weight:700; }
     .hours-input{ background:transparent !important; color:#000 !important; font-weight:800; }
     .time-input{ text-align:center; }
-
-    /* ---- SITE: print ONLY the selected option (compact → fits one page) ---- */
     .sites{ display:block !important; text-align:center; }
-    .sites .chip{ display:none !important; }            /* hide all options by default */
-    .sites .chip[aria-pressed="true"]{                  /* show ONLY the chosen one */
-      display:inline-flex !important; align-items:center; gap:0;
-      background: var(--es-red) !important; color:#fff !important;
-      border:1px solid var(--es-red) !important; font-weight:800;
-      padding: 2.5px 11px !important; font-size: 9.5px !important;
-      border-radius: 5px !important; box-shadow:none !important; white-space:nowrap;
-      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-    }
+    .sites .chip{ display:none !important; }
+    .sites .chip[aria-pressed="true"]{ display:inline-flex !important; align-items:center; gap:0;
+      background: var(--es-red) !important; color:#fff !important; border:1px solid var(--es-red) !important;
+      font-weight:800; padding: 2.5px 11px !important; font-size: 9.5px !important; border-radius: 5px !important;
+      box-shadow:none !important; white-space:nowrap; print-color-adjust: exact !important; }
     .sites .chip[aria-pressed="true"] .tick{ display:none !important; }
-    /* blank rows: a subtle dash so an unassigned worker reads clearly */
-    .sites.no-pick::after{ content:"—"; color:#b0b0b0; font-size:11px; }
-
-    /* dynamic-row controls hidden; cleaner cells on paper */
+    .sites.no-pick::after{ content:"\2014"; color:#b0b0b0; font-size:11px; }
     .row-remove{ display:none !important; }
     .col-no .no-wrap{ gap:0 !important; }
-    /* hide the native time-picker clock icon so empty cells aren't cluttered */
     input[type="time"]::-webkit-calendar-picker-indicator{ display:none !important; }
-    /* tidy grid: center the short columns (header + body) */
     table.log thead th.col-no, table.log thead th.col-site,
     table.log thead th.col-time, table.log thead th.col-hours{ text-align:center; }
     table.log td.col-time, table.log td.col-hours{ text-align:center; }
-
-    /* signature: clean empty cell (no underline) — drawn ink still prints */
-    .sign-box{
-      border:none !important;
-      border-radius:0; height: 26px; background:transparent !important;
-    }
+    table.log td.col-no, table.log td.col-site{ text-align:center; }
+    table.log thead th.col-name, table.log thead th.col-sign,
+    table.log td.col-name, table.log td.col-sign{ text-align:left; }
+    .sign-box{ border:none !important; border-radius:0; height: 26px; background:transparent !important; }
     .sign-box canvas{ filter: contrast(1.3); }
-
-    /* ---- work done ---- */
     .workdone{ padding: 10px 0 0; break-inside: avoid; overflow:visible; }
-    .gear-watermark{
-      opacity:.06 !important; width:130px; height:130px;
-      right:6px; bottom:0;
-      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-    }
+    .gear-watermark{ opacity:.06 !important; width:130px; height:130px; right:6px; bottom:0; print-color-adjust: exact !important; }
     .workdone h2{ font-size: 11px; }
-    .workdone h2::before{ background: var(--es-red) !important;
-      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .workdone textarea{
-      border:1px solid #888 !important; border-radius:6px;
-      min-height: 60px; font-size: 11px; box-shadow:none !important;
-      background:#fff !important;
-    }
+    .workdone h2::before{ background: var(--es-red) !important; print-color-adjust: exact !important; }
+    .workdone textarea{ border:1px solid #888 !important; border-radius:6px; min-height: 60px;
+      font-size: 11px; box-shadow:none !important; background:#fff !important; }
   }
 
   /* ---------------- HOW-TO PANEL (screen only) ---------------- */
