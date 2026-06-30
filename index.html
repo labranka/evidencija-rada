@@ -32,7 +32,7 @@
 
   *{ box-sizing: border-box; }
 
-  html,body{ margin:0; padding:0; }
+  html,body{ margin:0; padding:0; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 
   body{
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -481,6 +481,7 @@
   @media print{
     @page{ size: A4 portrait; margin: 9mm 8mm; }
     html,body{ background:#fff !important; padding:0; margin:0;
+      -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important;
       -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 11px; }
     .sheet{ box-shadow:none !important; max-width:none !important;
       border: 1.5px solid #2b313b !important; border-radius:0 !important;
