@@ -420,7 +420,61 @@
     .header{ grid-template-columns: 1fr; text-align:center; justify-items:center; }
     .meta .field{ min-width: 100%; }
     .actions{ justify-content:center; }
+    .btn{ flex:1 1 auto; justify-content:center; }
     .toast{ margin-left:0; width:100%; text-align:center; }
+
+    /* ---- TABLE → stacked cards on phones (no sideways scrolling) ---- */
+    .table-wrap{ overflow-x: visible; padding:0; }
+    table.log{ min-width: 0 !important; width:100%; font-size: 1rem; }
+    table.log thead{ display:none; }                       /* header row not needed in card view */
+    table.log, table.log tbody{ display:block; width:100%; }
+    table.log tr{
+      display:block; background:#fff;
+      border:1px solid var(--line); border-radius:16px;
+      padding:10px 14px 14px; margin:0 0 14px;
+      box-shadow:0 6px 18px rgba(28,34,45,.07);
+    }
+    table.log tbody tr:hover{ background:#fff; }
+    table.log td{
+      display:flex; align-items:center; gap:12px; width:100%;
+      border:none !important; padding:8px 0; min-width:0;
+    }
+    /* field label to the left of each value */
+    table.log td.col-name::before, table.log td.col-site::before,
+    table.log td:nth-child(4)::before, table.log td:nth-child(5)::before,
+    table.log td.col-hours::before, table.log td.col-sign::before{
+      flex:0 0 84px; color:var(--ink-soft); font-size:.72rem; font-weight:800;
+      text-transform:uppercase; letter-spacing:.04em; line-height:1.2;
+    }
+    table.log td.col-name::before{ content:"Ime / Name"; }
+    table.log td.col-site::before{ content:"Gradilište"; }
+    table.log td:nth-child(4)::before{ content:"Početak"; }
+    table.log td:nth-child(5)::before{ content:"Završetak"; }
+    table.log td.col-hours::before{ content:"Sati"; }
+    table.log td.col-sign::before{ content:"Potpis"; }
+
+    /* values fill the rest; 16px font stops iOS zoom-on-focus */
+    table.log .cell-input{
+      flex:1; min-width:0; width:auto; font-size:16px; padding:11px 12px;
+      border:1.5px solid var(--line-strong); border-radius:11px; background:#fff;
+      text-align:left;
+    }
+    table.log .time-input, table.log .hours-input{ text-align:center; }
+    table.log .sites{ flex:1; flex-direction:row; flex-wrap:wrap; gap:8px; }
+    table.log .chip{ flex:1 1 30%; justify-content:center; padding:10px 8px; }
+    table.log .sign-box{ flex:1; height:64px; }
+
+    /* card header strip: worker number badge + remove (×) */
+    table.log td.col-no{
+      justify-content:space-between; padding:2px 0 8px; margin-bottom:6px;
+      border-bottom:1px dashed var(--line) !important;
+    }
+    table.log td.col-no::before{
+      content:"Radnik / Worker"; flex:0 0 auto; color:var(--ink-soft);
+      font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+    }
+    table.log td.col-no .no-wrap{ flex-direction:row; align-items:center; gap:10px; }
+    table.log .row-remove{ font-size:20px; width:26px; height:26px; }
   }
 
   /* Bold official — heavy red header, full grey grid, brand-dark outer border so header + body read as ONE table */
