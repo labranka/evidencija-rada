@@ -291,8 +291,12 @@
     background:#fff;
     overflow:hidden;
     cursor: crosshair;
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
   }
-  .sign-box canvas{ display:block; width:100%; height:100%; touch-action:none; }
+  .sign-box canvas{ display:block; width:100%; height:100%; touch-action:none;
+    -webkit-user-select:none; user-select:none; }
+  /* while signing, don't let the drag select text in other cells */
+  body.signing, body.signing *{ -webkit-user-select:none !important; user-select:none !important; }
   .sign-box .hint{
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
@@ -519,11 +523,12 @@
     .titles h1{ font-size: 17.5px; font-weight:800; letter-spacing:.5px; line-height:1.1; margin:0; }
     .titles h1 .slash{ color: var(--es-red) !important; print-color-adjust: exact !important; }
     .titles .subtitle{ font-size: 9.5px; color:#555; margin-top:4px; }
-    .meta{ background:#fff !important; border-bottom:none; padding: 0 0 9px; gap: 5px 40px; margin-bottom: 4px; }
-    .field{ flex-direction: row !important; align-items: baseline; gap: 8px; min-width:auto; flex:1 1 auto; }
+    .meta{ background:#fff !important; border-bottom:none; padding: 0 0 9px; gap: 5px 26px; margin-bottom: 4px;
+      flex-wrap: nowrap !important; }
+    .field{ flex-direction: row !important; align-items: baseline; gap: 8px; min-width:0; flex:1 1 0; }
     .field label{ font-size: 9.5px; color:#000; font-weight:800; white-space:nowrap; }
     .field input{ border:none; border-bottom:1.1px solid #000; border-radius:0; padding:1px 3px;
-      font-size: 11.5px; font-weight:700; box-shadow:none !important; min-width:160px; flex:1; }
+      font-size: 11.5px; font-weight:700; box-shadow:none !important; min-width:0; flex:1 1 0; }
     .table-wrap{ overflow: visible; padding:0; }
 
     /* WOW TABLE — one cohesive unit: collapsed grid + brand-dark outer frame */
@@ -909,12 +914,20 @@
   }
   window.addEventListener("beforeprint", function(){ setViewport(VP_PRINT); });
   window.addEventListener("afterprint",  function(){ setViewport(VP_SCREEN); });
+  if(window.matchMedia){
+    try{
+      window.matchMedia("print").addListener(function(mq){
+        setViewport(mq.matches ? VP_PRINT : VP_SCREEN);
+      });
+    }catch(e){}
+  }
   function doPrint(){
     if(isInAppBrowser()){
       alert('Za štampu otvori stranicu u pravom pregledaču.\n\nMeni (⋮ ili ⋯) u uglu → „Otvori u pregledaču / Open in browser“ (Chrome, Safari ili Samsung Internet), pa opet „Štampaj / PDF“.');
       return;
     }
-    setViewport(VP_PRINT);                         // desktop-width layout just for printing
+    setViewport(VP_PRINT);                          // desktop-width layout just for printing
+    void document.documentElement.offsetWidth;      // force reflow so the new width applies before printing
     try{ window.print(); }
     catch(e){ toast('Štampa nije dostupna ovde — otvori u pregledaču', true); }
     setTimeout(function(){ setViewport(VP_SCREEN); }, 2000);  // restore (afterprint may not fire on mobile)
@@ -990,6 +1003,7 @@
     function start(ev){
       ev.preventDefault();
       drawing = true;
+      document.body.classList.add("signing");   // block text selection in other cells
       last = ptPos(canvas, ev);
       if(canvas.setPointerCapture && ev.pointerId !== undefined){
         try{ canvas.setPointerCapture(ev.pointerId); }catch(e){}
@@ -1008,7 +1022,7 @@
       last = p;
       if(!sign.drawn){ sign.drawn = true; sign.box.classList.add("has-ink"); }
     }
-    function end(){ drawing = false; last = null; }
+    function end(){ drawing = false; last = null; document.body.classList.remove("signing"); }
     canvas.addEventListener("pointerdown", start);
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerup", end);
