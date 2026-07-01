@@ -540,7 +540,7 @@
     /* Heavy red header; column dividers share the body's grey so the vertical grid
        runs unbroken header→body; a strong dark seam under the header ties it to the frame */
     table.log thead th{ position: static; background: var(--es-red) !important; color:#fff !important;
-      padding: 6px 5px; font-size: 8.6px; line-height:1.12; font-weight:800;
+      padding: 4px 5px; font-size: 8.6px; line-height:1.12; font-weight:800;
       text-transform: uppercase; letter-spacing:.35px; vertical-align: middle;
       border: .7px solid #aeb6c2 !important;
       border-bottom: 2px solid var(--ink) !important;
@@ -551,8 +551,8 @@
       text-transform: none; opacity:.92; margin-top:1px; }
 
     /* Body: full medium-grey grid, comfortable rows, crisp zebra; verticals align with header */
-    table.log tbody td{ padding: 4.5px 5px; border: .7px solid #aeb6c2 !important;
-      background:#fff !important; vertical-align: middle; height: 22px;
+    table.log tbody td{ padding: 2px 5px; border: .7px solid #aeb6c2 !important;
+      background:#fff !important; vertical-align: middle; height: 14px;
       print-color-adjust: exact !important; }
     table.log tbody tr:nth-child(even) td{ background:#eef1f6 !important; }
     table.log tbody td:first-child{ border-left: none !important; }
@@ -586,13 +586,13 @@
     table.log td.col-no, table.log td.col-site{ text-align:center; }
     table.log thead th.col-name, table.log thead th.col-sign,
     table.log td.col-name, table.log td.col-sign{ text-align:left; }
-    .sign-box{ border:none !important; border-radius:0; height: 26px; background:transparent !important; }
+    .sign-box{ border:none !important; border-radius:0; height: 17px; background:transparent !important; }
     .sign-box canvas{ filter: contrast(1.3); }
-    .workdone{ padding: 8px 0 0; break-inside: avoid; overflow:visible; }
-    .gear-watermark{ opacity:.06 !important; width:120px; height:120px; right:6px; bottom:0; print-color-adjust: exact !important; }
-    .workdone h2{ font-size: 10.5px; margin-bottom: 5px; }
+    .workdone{ padding: 6px 0 0; break-inside: avoid; overflow:visible; }
+    .gear-watermark{ opacity:.06 !important; width:110px; height:110px; right:6px; bottom:0; print-color-adjust: exact !important; }
+    .workdone h2{ font-size: 10px; margin-bottom: 4px; }
     .workdone h2::before{ background: var(--es-red) !important; print-color-adjust: exact !important; }
-    .workdone textarea{ border:1px solid #888 !important; border-radius:6px; min-height: 42px;
+    .workdone textarea{ border:1px solid #888 !important; border-radius:6px; min-height: 30px;
       font-size: 10.5px; box-shadow:none !important; background:#fff !important; }
   }
 
