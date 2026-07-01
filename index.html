@@ -416,6 +416,25 @@
     padding: 0 26px 22px; color:#98a1ae; font-size: 11px; font-weight:600;
   }
 
+  /* ---------------- VIEW-ONLY (shared read-only link) ---------------- */
+  .view-banner{
+    align-items:center; justify-content:center; gap:10px;
+    background:#fff4d6; border-bottom:1px solid #f0d48a; color:#7a5b00;
+    font-weight:800; font-size:13px; letter-spacing:.02em;
+    padding:13px 20px; text-align:center;
+  }
+  body.view-mode .cell-input,
+  body.view-mode input,
+  body.view-mode textarea{ pointer-events:none; }
+  body.view-mode .sites{ pointer-events:none; }
+  body.view-mode #btn-save,
+  body.view-mode #btn-load,
+  body.view-mode #btn-reset,
+  body.view-mode #btn-add,
+  body.view-mode #btn-email,
+  body.view-mode .row-remove,
+  body.view-mode .howto{ display:none !important; }
+
   /* ---------------- RESPONSIVE (phone) ---------------- */
   @media screen and (max-width: 720px){
     body{ padding: 12px 8px 40px; }
@@ -490,7 +509,7 @@
       border: 1.5px solid #2b313b !important; border-radius:0 !important;
       padding: 12px !important; overflow:hidden; }
     .summary, .actions, .footnote, .toast, .save-flag,
-    .sign-clear, .sign-box .hint, .sites-print{ display:none !important; }
+    .sign-clear, .sign-box .hint, .sites-print, .view-banner{ display:none !important; }
     .header{ display:flex !important; align-items:center; gap:16px;
       padding: 4px 0 10px; margin-bottom: 12px; border-bottom: 3px solid var(--es-red) !important; }
     .header::after{ display:none; }
@@ -633,6 +652,11 @@
 </head>
 <body>
 <div class="sheet" id="sheet">
+
+  <div class="view-banner" id="viewBanner" role="status" style="display:none">
+    🔒 SAMO ZA PREGLED — primljena evidencija, bez izmena / VIEW ONLY — read-only
+  </div>
+
 
   <!-- ===================== HEADER ===================== -->
   <header class="header">
@@ -804,6 +828,7 @@
 
 </div>
 
+<script>var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",n="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",e={};function t(r,o){if(!e[r]){e[r]={};for(var n=0;n<r.length;n++)e[r][r.charAt(n)]=n}return e[r][o]}var i={compressToBase64:function(r){if(null==r)return"";var n=i._compress(r,6,function(r){return o.charAt(r)});switch(n.length%4){default:case 0:return n;case 1:return n+"===";case 2:return n+"==";case 3:return n+"="}},decompressFromBase64:function(r){return null==r?"":""==r?null:i._decompress(r.length,32,function(n){return t(o,r.charAt(n))})},compressToUTF16:function(o){return null==o?"":i._compress(o,15,function(o){return r(o+32)})+" "},decompressFromUTF16:function(r){return null==r?"":""==r?null:i._decompress(r.length,16384,function(o){return r.charCodeAt(o)-32})},compressToUint8Array:function(r){for(var o=i.compress(r),n=new Uint8Array(2*o.length),e=0,t=o.length;e<t;e++){var s=o.charCodeAt(e);n[2*e]=s>>>8,n[2*e+1]=s%256}return n},decompressFromUint8Array:function(o){if(null==o)return i.decompress(o);for(var n=new Array(o.length/2),e=0,t=n.length;e<t;e++)n[e]=256*o[2*e]+o[2*e+1];var s=[];return n.forEach(function(o){s.push(r(o))}),i.decompress(s.join(""))},compressToEncodedURIComponent:function(r){return null==r?"":i._compress(r,6,function(r){return n.charAt(r)})},decompressFromEncodedURIComponent:function(r){return null==r?"":""==r?null:(r=r.replace(/ /g,"+"),i._decompress(r.length,32,function(o){return t(n,r.charAt(o))}))},compress:function(o){return i._compress(o,16,function(o){return r(o)})},_compress:function(r,o,n){if(null==r)return"";var e,t,i,s={},u={},a="",p="",c="",l=2,f=3,h=2,d=[],m=0,v=0;for(i=0;i<r.length;i+=1)if(a=r.charAt(i),Object.prototype.hasOwnProperty.call(s,a)||(s[a]=f++,u[a]=!0),p=c+a,Object.prototype.hasOwnProperty.call(s,p))c=p;else{if(Object.prototype.hasOwnProperty.call(u,c)){if(c.charCodeAt(0)<256){for(e=0;e<h;e++)m<<=1,v==o-1?(v=0,d.push(n(m)),m=0):v++;for(t=c.charCodeAt(0),e=0;e<8;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;e<h;e++)m=m<<1|t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=c.charCodeAt(0),e=0;e<16;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}0==--l&&(l=Math.pow(2,h),h++),delete u[c]}else for(t=s[c],e=0;e<h;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;0==--l&&(l=Math.pow(2,h),h++),s[p]=f++,c=String(a)}if(""!==c){if(Object.prototype.hasOwnProperty.call(u,c)){if(c.charCodeAt(0)<256){for(e=0;e<h;e++)m<<=1,v==o-1?(v=0,d.push(n(m)),m=0):v++;for(t=c.charCodeAt(0),e=0;e<8;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}else{for(t=1,e=0;e<h;e++)m=m<<1|t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t=0;for(t=c.charCodeAt(0),e=0;e<16;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1}0==--l&&(l=Math.pow(2,h),h++),delete u[c]}else for(t=s[c],e=0;e<h;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;0==--l&&(l=Math.pow(2,h),h++)}for(t=2,e=0;e<h;e++)m=m<<1|1&t,v==o-1?(v=0,d.push(n(m)),m=0):v++,t>>=1;for(;;){if(m<<=1,v==o-1){d.push(n(m));break}v++}return d.join("")},decompress:function(r){return null==r?"":""==r?null:i._decompress(r.length,32768,function(o){return r.charCodeAt(o)})},_decompress:function(o,n,e){var t,i,s,u,a,p,c,l=[],f=4,h=4,d=3,m="",v=[],g={val:e(0),position:n,index:1};for(t=0;t<3;t+=1)l[t]=t;for(s=0,a=Math.pow(2,2),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;switch(s){case 0:for(s=0,a=Math.pow(2,8),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;c=r(s);break;case 1:for(s=0,a=Math.pow(2,16),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;c=r(s);break;case 2:return""}for(l[3]=c,i=c,v.push(c);;){if(g.index>o)return"";for(s=0,a=Math.pow(2,d),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;switch(c=s){case 0:for(s=0,a=Math.pow(2,8),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;l[h++]=r(s),c=h-1,f--;break;case 1:for(s=0,a=Math.pow(2,16),p=1;p!=a;)u=g.val&g.position,g.position>>=1,0==g.position&&(g.position=n,g.val=e(g.index++)),s|=(u>0?1:0)*p,p<<=1;l[h++]=r(s),c=h-1,f--;break;case 2:return v.join("")}if(0==f&&(f=Math.pow(2,d),d++),l[c])m=l[c];else{if(c!==h)return null;m=i+i.charAt(0)}v.push(m),l[h++]=i+m.charAt(0),i=m,0==--f&&(f=Math.pow(2,d),d++)}}};return i}();"function"==typeof define&&define.amd?define(function(){return LZString}):"undefined"!=typeof module&&null!=module?module.exports=LZString:"undefined"!=typeof angular&&null!=angular&&angular.module("LZString",[]).factory("LZString",function(){return LZString});</script>
 <script>
 /* ============================================================
    ES ENERGOSERVIS — Daily Work Log
@@ -1218,6 +1243,33 @@
     }catch(e){ return false; }
   }
   /** Open the user's email app with the day's report pre-filled (they attach the PDF). */
+  /* ---------- shared read-only link (data packed into the URL) ---------- */
+  function getSharedData(){
+    try{
+      var h = (location.hash || "").replace(/^#/, "");
+      var m = /(?:^|&)r=([^&]+)/.exec(h);
+      if(!m || typeof LZString === "undefined") return null;
+      var json = LZString.decompressFromEncodedURIComponent(m[1]);
+      return json ? JSON.parse(json) : null;
+    }catch(e){ return null; }
+  }
+  function buildViewLink(){
+    var st = collectState();
+    (st.rows || []).forEach(function(r){ r.sign = ""; });   // drop signatures to keep the link short
+    var payload = JSON.stringify(st);
+    var packed = (typeof LZString !== "undefined")
+      ? LZString.compressToEncodedURIComponent(payload)
+      : encodeURIComponent(payload);
+    return location.origin + location.pathname + "#r=" + packed;
+  }
+  function lockForView(){
+    document.body.classList.add("view-mode");
+    var sheet = document.getElementById("sheet");
+    sheet.querySelectorAll("input, textarea").forEach(function(el){ el.readOnly = true; el.tabIndex = -1; });
+    sheet.querySelectorAll(".chip").forEach(function(c){ c.disabled = true; });
+    var b = document.getElementById("viewBanner");
+    if(b) b.style.display = "flex";
+  }
   function emailReport(){
     var saved = "";
     try{ saved = localStorage.getItem(EMAIL_KEY) || ""; }catch(e){}
@@ -1237,6 +1289,9 @@
       if(r.site || has) present++;
       if(r.site && counts.hasOwnProperty(r.site)) counts[r.site]++;
     });
+    var link = buildViewLink();
+    try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link); }catch(e){}
+
     var L = [];
     L.push("EVIDENCIJA RADA — " + (st.date || todayISO()));
     L.push("Odgovorni / Supervisor: " + (st.supervisor || "-"));
@@ -1244,23 +1299,17 @@
     L.push("Raspored: Vršac " + counts["Vršac"] + "  ·  Sremska Rača " + counts["Sremska Rača"] + "  ·  Radionica " + counts["Radionica"]);
     L.push("Prisutno: " + present + " / " + rows.length + "   |   Ukupno sati: " + (formatHours(total) || "0"));
     L.push("");
-    L.push("Radnici:");
-    rows.forEach(function(r, i){
-      if(!r.name && !r.site && !r.hours) return;
-      L.push("  " + (i + 1) + ". " + (r.name || "-") + " — " + (r.site || "-") + " — " +
-             (r.start || "--:--") + "-" + (r.end || "--:--") + " — " + (r.hours || "") + " h");
-    });
-    L.push("");
     L.push("Izvršeni radovi: " + (st.work || "-"));
     L.push("Problemi i zapažanja: " + (st.issues || "-"));
     L.push("");
-    L.push("(Napomena: PDF se ne kači automatski — napravi ga preko „Štampaj / PDF“ → „Sačuvaj kao PDF“ i zakači u ovaj mejl.)");
+    L.push("▶ Popunjena evidencija — samo za pregled (bez izmena):");
+    L.push(link);
     var subject = "Evidencija rada — " + (st.date || todayISO());
     var url = "mailto:" + encodeURIComponent(email) +
               "?subject=" + encodeURIComponent(subject) +
               "&body=" + encodeURIComponent(L.join("\n"));
     window.location.href = url;
-    toast("Otvaram mejl… zakači PDF iz Preuzimanja", true);
+    toast("Otvaram mejl (link je i kopiran) ✓");
   }
   function saveState(){
     var state = collectState();
@@ -1390,6 +1439,12 @@
     wireGlobal();
     dateEl.value = todayISO();
     updateSummary();
+    var shared = getSharedData();
+    if(shared){                       // opened via a shared read-only link
+      applyState(shared);
+      lockForView();
+      return;
+    }
     if(localStorage.getItem(STORAGE_KEY)){ loadState(false); }
   }
   if(document.readyState === "loading"){
