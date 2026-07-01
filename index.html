@@ -564,12 +564,12 @@
     table.log td.col-name, table.log td.col-sign{ text-align:left; }
     .sign-box{ border:none !important; border-radius:0; height: 26px; background:transparent !important; }
     .sign-box canvas{ filter: contrast(1.3); }
-    .workdone{ padding: 10px 0 0; break-inside: avoid; overflow:visible; }
-    .gear-watermark{ opacity:.06 !important; width:130px; height:130px; right:6px; bottom:0; print-color-adjust: exact !important; }
-    .workdone h2{ font-size: 11px; }
+    .workdone{ padding: 8px 0 0; break-inside: avoid; overflow:visible; }
+    .gear-watermark{ opacity:.06 !important; width:120px; height:120px; right:6px; bottom:0; print-color-adjust: exact !important; }
+    .workdone h2{ font-size: 10.5px; margin-bottom: 5px; }
     .workdone h2::before{ background: var(--es-red) !important; print-color-adjust: exact !important; }
-    .workdone textarea{ border:1px solid #888 !important; border-radius:6px; min-height: 60px;
-      font-size: 11px; box-shadow:none !important; background:#fff !important; }
+    .workdone textarea{ border:1px solid #888 !important; border-radius:6px; min-height: 42px;
+      font-size: 10.5px; box-shadow:none !important; background:#fff !important; }
   }
 
   /* ---------------- HOW-TO PANEL (screen only) ---------------- */
@@ -643,7 +643,7 @@
     </div>
     <div class="titles">
       <h1>EVIDENCIJA RADA <span class="slash">/</span> DAILY WORK LOG</h1>
-      <p class="subtitle">Dnevni izvještaj o prisustvu na radu / Daily Attendance Report</p>
+      <p class="subtitle">Dnevni izveštaj o prisustvu na radu / Daily Attendance Report</p>
     </div>
   </header>
 
@@ -733,6 +733,12 @@
     <textarea id="f-workdone" placeholder="Opišite izvršene radove… / Describe the work done…"></textarea>
   </section>
 
+  <!-- ===================== SITE ISSUES & OBSERVATIONS ===================== -->
+  <section class="workdone issues-sec">
+    <h2>PROBLEMI I ZAPAŽANJA / SITE ISSUES &amp; OBSERVATIONS</h2>
+    <textarea id="f-issues" placeholder="Upišite probleme i zapažanja… / Note any issues and observations…"></textarea>
+  </section>
+
   <!-- ===================== PRINT-ONLY FOOTER (filled-form look) ===================== -->
   <section class="print-footer" aria-hidden="true">
     <div class="pf-stats">
@@ -815,6 +821,7 @@
   var dateEl     = document.getElementById("f-date");
   var supEl      = document.getElementById("f-supervisor");
   var workEl     = document.getElementById("f-workdone");
+  var issuesEl   = document.getElementById("f-issues");
   var toastEl    = document.getElementById("toast");
   var saveFlagEl = document.getElementById("save-flag");
 
@@ -1190,7 +1197,7 @@
         sign:  (sign && sign.drawn) ? sign.canvas.toDataURL("image/png") : ""
       });
     });
-    return { date: dateEl.value, supervisor: supEl.value, work: workEl.value, rows: rows };
+    return { date: dateEl.value, supervisor: supEl.value, work: workEl.value, issues: issuesEl.value, rows: rows };
   }
   /** Trigger a file download on the device. */
   function downloadText(filename, text, mime){
@@ -1247,6 +1254,7 @@
     if(typeof data.date === "string") dateEl.value = data.date;
     if(typeof data.supervisor === "string") supEl.value = data.supervisor;
     if(typeof data.work === "string") workEl.value = data.work;
+    if(typeof data.issues === "string") issuesEl.value = data.issues;
 
     var saved = data.rows || [];
     rowsEl.innerHTML = "";
@@ -1300,6 +1308,7 @@
     dateEl.value = todayISO();
     supEl.value = "";
     workEl.value = "";
+    issuesEl.value = "";
     buildDefaultRows();
     updateSummary();
     toast("Resetovano / Reset ✓");
