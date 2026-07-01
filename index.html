@@ -897,13 +897,27 @@
     var ua = navigator.userAgent || "";
     return /FBAN|FBAV|FB_IAB|Instagram|Line\/|Viber|WhatsApp|MicroMessenger|GSA\/|; wv\)/i.test(ua);
   }
+  /* Mobile browsers lay out the print at the (narrow) screen width and then STRETCH it
+     to A4 — everything grows and spills onto a 2nd page. For printing we temporarily
+     force a wide "desktop" layout width, then restore it, so the printed PDF is the
+     SAME on phone and desktop. The on-screen (filling) layout stays responsive. */
+  var VP_SCREEN = "width=device-width, initial-scale=1.0";
+  var VP_PRINT  = "width=1240";
+  function setViewport(content){
+    var m = document.querySelector('meta[name="viewport"]');
+    if(m) m.setAttribute("content", content);
+  }
+  window.addEventListener("beforeprint", function(){ setViewport(VP_PRINT); });
+  window.addEventListener("afterprint",  function(){ setViewport(VP_SCREEN); });
   function doPrint(){
     if(isInAppBrowser()){
       alert('Za štampu otvori stranicu u pravom pregledaču.\n\nMeni (⋮ ili ⋯) u uglu → „Otvori u pregledaču / Open in browser“ (Chrome, Safari ili Samsung Internet), pa opet „Štampaj / PDF“.');
       return;
     }
+    setViewport(VP_PRINT);                         // desktop-width layout just for printing
     try{ window.print(); }
     catch(e){ toast('Štampa nije dostupna ovde — otvori u pregledaču', true); }
+    setTimeout(function(){ setViewport(VP_SCREEN); }, 2000);  // restore (afterprint may not fire on mobile)
   }
   var toastTimer = null;
   function toast(msg, isWarn){
